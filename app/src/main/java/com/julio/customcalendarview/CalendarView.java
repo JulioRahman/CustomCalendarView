@@ -2,7 +2,9 @@ package com.julio.customcalendarview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.icu.util.IslamicCalendar;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,12 +15,6 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import org.joda.time.Chronology;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
-import org.joda.time.chrono.ISOChronology;
-import org.joda.time.chrono.IslamicChronology;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -53,10 +49,11 @@ public class CalendarView extends LinearLayout
     private TextView txtDate;
     private GridView grid;
 
-    Chronology iso = ISOChronology.getInstanceUTC();
-    Chronology hijri = IslamicChronology.getInstance(DateTimeZone.getDefault(), IslamicChronology.LEAP_YEAR_16_BASED);
+    private String[] sMonth = {"Muharram", "Safar", "Rabiul awal", "Rabiul akhir", "Jumadil awal", "Jumadil akhir", "Rajab", "Sya'ban", "Ramadhan", "Syawal", "Dzulkaidah", "Dzulhijjah"};
 
-    int iMonth = currentDate.get(Calendar.MONTH);
+    private String tmp;
+
+    private int iMonth = currentDate.get(Calendar.MONTH);
 
     public CalendarView(Context context)
     {
@@ -256,15 +253,21 @@ public class CalendarView extends LinearLayout
             ((TextView)view).setText("");
 
             // set text
-            LocalDate todayIso = new LocalDate(LocalDate.fromDateFields(date), iso);
-            LocalDate todayHijri = new LocalDate(todayIso.toDateTimeAtStartOfDay(), hijri);
-            ((TextView)view).setText(String.valueOf(todayHijri.getDayOfMonth()));
+            IslamicCalendar islamicCalendar = new IslamicCalendar(date);
+            ((TextView)view).setText(String.valueOf(islamicCalendar.get(android.icu.util.Calendar.DAY_OF_MONTH)));
             //((TextView)view).setText(String.valueOf(day));
+
+            if (date.getDay() == 1 || date.getDay() == 4) ((TextView)view).setBackgroundColor(getResources().getColor(R.color.senin_kamis));
+            if (islamicCalendar.get(android.icu.util.Calendar.DAY_OF_MONTH) >= 13 && islamicCalendar.get(android.icu.util.Calendar.DAY_OF_MONTH) <= 15) ((TextView)view).setBackgroundColor(getResources().getColor(R.color.ayyamul_bidh));
+            if (islamicCalendar.get(android.icu.util.Calendar.MONTH) == 8) ((TextView)view).setBackgroundColor(getResources().getColor(R.color.ramadhan));
+            if (islamicCalendar.get(android.icu.util.Calendar.MONTH) == 9 && (islamicCalendar.get(android.icu.util.Calendar.DAY_OF_MONTH) >= 2 && islamicCalendar.get(android.icu.util.Calendar.DAY_OF_MONTH) <= 7)) ((TextView)view).setBackgroundColor(getResources().getColor(R.color.syawwal));
+            if (islamicCalendar.get(android.icu.util.Calendar.MONTH) == 9 && islamicCalendar.get(android.icu.util.Calendar.DAY_OF_MONTH) == 1) ((TextView)view).setBackgroundColor(getResources().getColor(R.color.dilarang));
 
             if (month != iMonth % 12)
             {
                 // if this day is outside current month, ngga usah di tampilin
                 ((TextView)view).setText("");
+                ((TextView)view).setBackgroundColor(0);
             }
             else if (day == today.getDate() && month == today.getMonth() && year == today.getYear())
             {
@@ -272,6 +275,26 @@ public class CalendarView extends LinearLayout
                 ((TextView)view).setTypeface(null, Typeface.BOLD);
                 ((TextView)view).setTextColor(getResources().getColor(R.color.today));
             }
+
+            if (date.getDay() == 0) ((TextView)view).setTextColor(getResources().getColor(R.color.ahad));
+
+//            if (day == 15) {
+//                Date datee = getItem(position);
+//                IslamicCalendar islamicCalendar1 = new IslamicCalendar(datee.getYear(), datee.getMonth(), 0);
+//                Calendar c = Calendar.getInstance();
+//                c.setTime(datee);
+//                IslamicCalendar islamicCalendar2 = new IslamicCalendar(datee.getYear(), datee.getMonth(), c.getActualMaximum(Calendar.DAY_OF_MONTH));
+//
+//                tmp = sMonth[islamicCalendar1.get(android.icu.util.Calendar.MONTH)] + " " +
+//                        islamicCalendar1.get(android.icu.util.Calendar.YEAR) + " -\n" +
+//                        sMonth[islamicCalendar2.get(android.icu.util.Calendar.MONTH)] + " " +
+//                        islamicCalendar2.get(android.icu.util.Calendar.YEAR);
+//
+//                txtDate.setText(tmp);
+//            }
+
+            if (position == 0) tmp = sMonth[islamicCalendar.get(android.icu.util.Calendar.MONTH)] + " " + islamicCalendar.get(android.icu.util.Calendar.YEAR);
+            if (position == 21) txtDate.setText(tmp + " -\n" + sMonth[islamicCalendar.get(android.icu.util.Calendar.MONTH)] + " " + islamicCalendar.get(android.icu.util.Calendar.YEAR));
 
             return view;
         }

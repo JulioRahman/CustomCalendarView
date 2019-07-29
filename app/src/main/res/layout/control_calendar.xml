@@ -12,8 +12,8 @@
 		android:layout_height="wrap_content"
 		android:paddingTop="12dp"
 		android:paddingBottom="12dp"
-		android:paddingLeft="30dp"
-		android:paddingRight="30dp">
+		android:paddingLeft="18dp"
+		android:paddingRight="18dp">
 
 		<!-- prev button -->
 		<ImageView
@@ -60,8 +60,16 @@
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
 			android:gravity="center_horizontal"
-			android:textColor="#222222"
-			android:text="SUN"/>
+			android:textColor="@color/ahad"
+			android:text="Ahad"/>
+
+		<TextView
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:gravity="center_horizontal"
+			android:textColor="@color/senin_kamis"
+			android:text="Senin"/>
 
 		<TextView
 			android:layout_width="0dp"
@@ -69,7 +77,7 @@
 			android:layout_weight="1"
 			android:gravity="center_horizontal"
 			android:textColor="#222222"
-			android:text="MON"/>
+			android:text="Selasa"/>
 
 		<TextView
 			android:layout_width="0dp"
@@ -77,7 +85,15 @@
 			android:layout_weight="1"
 			android:gravity="center_horizontal"
 			android:textColor="#222222"
-			android:text="TUE"/>
+			android:text="Rabu"/>
+
+		<TextView
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+			android:gravity="center_horizontal"
+			android:textColor="@color/senin_kamis"
+			android:text="Kamis"/>
 
 		<TextView
 			android:layout_width="0dp"
@@ -85,7 +101,7 @@
 			android:layout_weight="1"
 			android:gravity="center_horizontal"
 			android:textColor="#222222"
-			android:text="WED"/>
+			android:text="Jumat"/>
 
 		<TextView
 			android:layout_width="0dp"
@@ -93,29 +109,18 @@
 			android:layout_weight="1"
 			android:gravity="center_horizontal"
 			android:textColor="#222222"
-			android:text="THU"/>
-
-		<TextView
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:gravity="center_horizontal"
-			android:textColor="#222222"
-			android:text="FRI"/>
-
-		<TextView
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:gravity="center_horizontal"
-			android:textColor="#222222"
-			android:text="SAT"/>
+			android:text="Sabtu"/>
 	</LinearLayout>
 
 	<!-- days view -->
 	<GridView
 		android:id="@+id/calendar_grid"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"
+		android:layout_height="wrap_content"
 		android:numColumns="7"/>
+
+	<ListView
+		android:id="@+id/lvPuasa"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"/>
 </LinearLayout>
