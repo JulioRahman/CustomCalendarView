@@ -37,7 +37,7 @@ public class ListAdapter extends ArrayAdapter<String> {
 
         Drawable unwrappedDrawable = AppCompatResources.getDrawable(context, R.drawable.circle_shape);
         Drawable wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable);
-        DrawableCompat.setTint(wrappedDrawable, color.get(position));
+        DrawableCompat.setTint(wrappedDrawable, context.getResources().getColor(color.get(position)));
 
         contentText.setText(content.get(position));
         imageView.setImageDrawable(wrappedDrawable);

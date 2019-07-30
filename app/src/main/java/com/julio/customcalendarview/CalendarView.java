@@ -2,7 +2,6 @@ package com.julio.customcalendarview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.icu.util.IslamicCalendar;
 import android.util.AttributeSet;
@@ -15,7 +14,6 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -52,7 +50,7 @@ public class CalendarView extends LinearLayout
     private TextView txtDate;
     private GridView grid;
     private ListView listView;
-    private SimpleAdapter listAdapter;
+    private ListAdapter adapter;
 
     private String[] sMonth = {"Muharram", "Safar", "Rabiul awal", "Rabiul akhir", "Jumadil awal", "Jumadil akhir", "Rajab", "Sya'ban", "Ramadhan", "Syawal", "Dzulkaidah", "Dzulhijjah"};
     private ArrayList<String> textPuasa = new ArrayList<String>();
@@ -89,18 +87,6 @@ public class CalendarView extends LinearLayout
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.control_calendar, this);
 
-        textPuasa.add("Puasa 1");
-        textPuasa.add("Puasa 2");
-        textPuasa.add("Puasa 3");
-        textPuasa.add("Puasa 4");
-        textPuasa.add("Puasa 5");
-
-        colorPuasa.add(Color.BLUE);
-        colorPuasa.add(Color.RED);
-        colorPuasa.add(Color.GREEN);
-        colorPuasa.add(Color.GRAY);
-        colorPuasa.add(Color.BLACK);
-
         loadDateFormat(attrs);
         assignUiElements();
         assignClickHandlers();
@@ -134,6 +120,9 @@ public class CalendarView extends LinearLayout
         txtDate = (TextView)findViewById(R.id.calendar_date_display);
         grid = (GridView)findViewById(R.id.calendar_grid);
         listView = (ListView)findViewById(R.id.lvPuasa);
+
+        adapter = new ListAdapter(getContext(), textPuasa, colorPuasa);
+        listView.setAdapter(adapter);
     }
 
     private void assignClickHandlers()
@@ -156,9 +145,11 @@ public class CalendarView extends LinearLayout
             @Override
             public void onClick(View v)
             {
-                currentDate.add(Calendar.MONTH, -1);
-                iMonth--;
-                updateCalendar();
+                if (iMonth >= 1) {
+                    currentDate.add(Calendar.MONTH, -1);
+                    iMonth--;
+                    updateCalendar();
+                }
             }
         });
 
@@ -192,6 +183,9 @@ public class CalendarView extends LinearLayout
      */
     public void updateCalendar(HashSet<Date> events)
     {
+        textPuasa.clear();
+        colorPuasa.clear();
+
         ArrayList<Date> cells = new ArrayList<>();
         Calendar calendar = (Calendar)currentDate.clone();
 
@@ -227,8 +221,7 @@ public class CalendarView extends LinearLayout
 //                new String[]{"teks"}, new int[]{R.id.textView});
 //        listView.setAdapter(listAdapter);
 
-        ListAdapter adapter = new ListAdapter(getContext(), textPuasa, colorPuasa);
-        listView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
 
@@ -293,11 +286,44 @@ public class CalendarView extends LinearLayout
             ((TextView)view).setText(String.valueOf(islamicCalendar.get(android.icu.util.Calendar.DAY_OF_MONTH)));
             //((TextView)view).setText(String.valueOf(day));
 
-            if (date.getDay() == 1 || date.getDay() == 4) ((TextView)view).setBackgroundColor(getResources().getColor(R.color.senin_kamis));
-            if (islamicCalendar.get(android.icu.util.Calendar.DAY_OF_MONTH) >= 13 && islamicCalendar.get(android.icu.util.Calendar.DAY_OF_MONTH) <= 15) ((TextView)view).setBackgroundColor(getResources().getColor(R.color.ayyamul_bidh));
-            if (islamicCalendar.get(android.icu.util.Calendar.MONTH) == 8) ((TextView)view).setBackgroundColor(getResources().getColor(R.color.ramadhan));
-            if (islamicCalendar.get(android.icu.util.Calendar.MONTH) == 9 && (islamicCalendar.get(android.icu.util.Calendar.DAY_OF_MONTH) >= 2 && islamicCalendar.get(android.icu.util.Calendar.DAY_OF_MONTH) <= 7)) ((TextView)view).setBackgroundColor(getResources().getColor(R.color.syawwal));
-            if (islamicCalendar.get(android.icu.util.Calendar.MONTH) == 9 && islamicCalendar.get(android.icu.util.Calendar.DAY_OF_MONTH) == 1) ((TextView)view).setBackgroundColor(getResources().getColor(R.color.dilarang));
+            // pewarnaan puasa
+            if (month == iMonth % 12) {
+                if (date.getDay() == 1 || date.getDay() == 4) {
+                    ((TextView)view).setBackgroundColor(getResources().getColor(R.color.senin_kamis));
+                    if (!colorPuasa.contains(R.color.senin_kamis)) {
+                        textPuasa.add("Puasa Senin dan Kamis");
+                        colorPuasa.add(R.color.senin_kamis);
+                    }
+                }
+                if (islamicCalendar.get(android.icu.util.Calendar.DAY_OF_MONTH) >= 13 && islamicCalendar.get(android.icu.util.Calendar.DAY_OF_MONTH) <= 15) {
+                    ((TextView)view).setBackgroundColor(getResources().getColor(R.color.ayyamul_bidh));
+                    if (!colorPuasa.contains(R.color.ayyamul_bidh)) {
+                        textPuasa.add("Puasa Ayyamul Bidh");
+                        colorPuasa.add(R.color.ayyamul_bidh);
+                    }
+                }
+                if (islamicCalendar.get(android.icu.util.Calendar.MONTH) == 8) {
+                    ((TextView)view).setBackgroundColor(getResources().getColor(R.color.ramadhan));
+                    if (!colorPuasa.contains(R.color.ramadhan)) {
+                        textPuasa.add("Puasa Ramadhan");
+                        colorPuasa.add(R.color.ramadhan);
+                    }
+                }
+                if (islamicCalendar.get(android.icu.util.Calendar.MONTH) == 9 && (islamicCalendar.get(android.icu.util.Calendar.DAY_OF_MONTH) >= 2 && islamicCalendar.get(android.icu.util.Calendar.DAY_OF_MONTH) <= 7)) {
+                    ((TextView)view).setBackgroundColor(getResources().getColor(R.color.syawwal));
+                    if (!colorPuasa.contains(R.color.syawwal)) {
+                        textPuasa.add("Puasa 6 hari dibulan Syawwal");
+                        colorPuasa.add(R.color.syawwal);
+                    }
+                }
+                if (islamicCalendar.get(android.icu.util.Calendar.MONTH) == 9 && islamicCalendar.get(android.icu.util.Calendar.DAY_OF_MONTH) == 1) {
+                    ((TextView)view).setBackgroundColor(getResources().getColor(R.color.dilarang));
+                    if (!colorPuasa.contains(R.color.dilarang)) {
+                        textPuasa.add("Hari yang dilarang Puasa");
+                        colorPuasa.add(R.color.dilarang);
+                    }
+                }
+            }
 
             if (month != iMonth % 12)
             {
