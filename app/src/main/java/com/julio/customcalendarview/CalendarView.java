@@ -14,12 +14,15 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class CalendarView extends LinearLayout
@@ -48,8 +51,14 @@ public class CalendarView extends LinearLayout
     private ImageView btnNext;
     private TextView txtDate;
     private GridView grid;
+    private ListView listView;
+    private SimpleAdapter listAdapter;
 
     private String[] sMonth = {"Muharram", "Safar", "Rabiul awal", "Rabiul akhir", "Jumadil awal", "Jumadil akhir", "Rajab", "Sya'ban", "Ramadhan", "Syawal", "Dzulkaidah", "Dzulhijjah"};
+    private ArrayList<String> textPuasa = new ArrayList<String>();
+    private ArrayList<Integer> colorPuasa = new ArrayList<Integer>();
+    private HashMap<String, String> map;
+    private ArrayList<HashMap<String, String>> mylist;
 
     private String tmp;
 
@@ -79,6 +88,18 @@ public class CalendarView extends LinearLayout
     {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.control_calendar, this);
+
+        textPuasa.add("Puasa 1");
+        textPuasa.add("Puasa 2");
+        textPuasa.add("Puasa 3");
+        textPuasa.add("Puasa 4");
+        textPuasa.add("Puasa 5");
+
+        colorPuasa.add(Color.BLUE);
+        colorPuasa.add(Color.RED);
+        colorPuasa.add(Color.GREEN);
+        colorPuasa.add(Color.GRAY);
+        colorPuasa.add(Color.BLACK);
 
         loadDateFormat(attrs);
         assignUiElements();
@@ -112,6 +133,7 @@ public class CalendarView extends LinearLayout
         btnNext = (ImageView)findViewById(R.id.calendar_next_button);
         txtDate = (TextView)findViewById(R.id.calendar_date_display);
         grid = (GridView)findViewById(R.id.calendar_grid);
+        listView = (ListView)findViewById(R.id.lvPuasa);
     }
 
     private void assignClickHandlers()
@@ -193,6 +215,20 @@ public class CalendarView extends LinearLayout
         // update title
         SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
         txtDate.setText(sdf.format(currentDate.getTime()));
+
+        // list puasa
+//        mylist = new ArrayList<HashMap<String, String>>();
+//        for (int i = 0; i < textPuasa.size(); i++) {
+//            map = new HashMap<String, String>();
+//            map.put("teks", textPuasa.get(i));
+//            mylist.add(map);
+//        }
+//        listAdapter = new SimpleAdapter(getContext(), mylist, R.layout.item_puasa,
+//                new String[]{"teks"}, new int[]{R.id.textView});
+//        listView.setAdapter(listAdapter);
+
+        ListAdapter adapter = new ListAdapter(getContext(), textPuasa, colorPuasa);
+        listView.setAdapter(adapter);
     }
 
 
@@ -228,7 +264,7 @@ public class CalendarView extends LinearLayout
 
             // inflate item if it does not exist yet
             if (view == null)
-                view = inflater.inflate(R.layout.control_calendar_day, parent, false);
+                view = inflater.inflate(R.layout.control_calendar_day, null, false);
 
             // if this day has an event, specify event image
             view.setBackgroundResource(0);
